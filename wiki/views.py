@@ -2,15 +2,20 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.text import slugify
+
 
 from wiki.models import Page
-from .forms import PageForm
+from wiki.forms import PageForm
 
 
 class PageCreateView(CreateView):
+    '''Create a new wiki page'''
     model = Page
     fields = ['title', 'content', 'author']
-    template_name = 'new-page.html'
+    template_name = 'create_page.html'
 
 
 class PageListView(ListView):
@@ -21,8 +26,9 @@ class PageListView(ListView):
         """ GET a list of Pages. """
         pages = self.get_queryset().all()
         return render(request, 'list.html', {
-          'pages': pages
+            'pages': pages,
         })
+
 
 class PageDetailView(DetailView):
     """ Renders a specific page based on it's slug."""
@@ -32,5 +38,21 @@ class PageDetailView(DetailView):
         """ Returns a specific wiki page by slug. """
         page = self.get_queryset().get(slug__iexact=slug)
         return render(request, 'page.html', {
-          'page': page
+            'page': page,
+            'form': PageForm()
         })
+
+    # Edit form
+    def post(self, req, slug):
+        '''Edit the page's information'''
+        form = PageForm(req.POST)
+
+        page = self.get_queryset().get(slug__iexact=slug)
+        page.title = req.POST['title']
+        page.content = req.POST['content']
+        page.author = req.user     
+        page.slug = slugify(page.title)
+        page.save()
+
+        
+        return HttpResponseRedirect(reverse('wiki-details-page', args=[page.slug]))
