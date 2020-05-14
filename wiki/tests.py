@@ -29,10 +29,10 @@ def test_create_page(self):
     }
 
     res = self.client.post('/create/', data=post_data)
-
-    self.assertEqual(res.status_code, 302)
-
     page_object = Page.objects.get(title='asdasdasdasd')
 
-    self.assertEqual(page_object.title, 'asdasdasdasdasdasd')
+    self.assertEqual(res.status_code, 302)
+    self.assertEqual(page_object.title, 'asdasdasdasd')
+    self.assertEqual(page_object.content, 'asdasdasdasdasdasd')
+
 
