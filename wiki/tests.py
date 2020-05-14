@@ -112,4 +112,4 @@ class WikiTests(TestCase):
         page.save() 
 
 
-        self.assertEqual(self.client.post('/{}/'.format(slugify(page.title)).status_code, 200)
+        self.assertEqual(self.client.post('/{}/'.format(slugify(page.title))).status_code, 200)
