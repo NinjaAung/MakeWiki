@@ -20,8 +20,17 @@ class WikiTests(TestCase):
         
 
     def test_create_page(self):
-        test_user = User.objects.create()
-        # Post data to be sent via the form
+        test_user = User.objects.create_user(
+            username='test', 
+            password='test'
+        )
+
+        self.client.login(
+            username='test', 
+            password='test'
+        )
+        
+        
         post_data = {
             'title': 'asdasdasdasd',
             'content': 'asdasdasdasdasdasd',
@@ -82,6 +91,27 @@ class WikiTests(TestCase):
         page.save()
  
         self.client.logout()
+    
+    def test_detail_page(self):
+        test_user = User.objects.create_user(
+            username='test', 
+            password='test'
+        )
 
+        self.client.login(
+            username='test', 
+            password='test'
+        )
+
+        page = Page.objects.create(
+            title="asdasdasdasd",
+            content="asdasdasdasd", 
+            author=test_user
+            )
+
+        page.save() 
+
+
+        self.assertEqual(self.client.get(f'/{slugify(page.title)}/').status_code, 200)
     
 
