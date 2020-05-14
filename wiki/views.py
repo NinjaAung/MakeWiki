@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.text import slugify
@@ -12,22 +12,22 @@ from wiki.forms import PageForm
 
 
 class PageCreateView(CreateView):
-    '''Create a new wiki page'''
-    model = Page
-    fields = ['title', 'content', 'author']
-    template_name = 'create_page.html'
+  '''Create a new wiki page'''
+  model = Page
+  fields = ['title', 'content', 'author']
+  template_name = 'create_page.html'
 
 
 class PageListView(ListView):
-    """ Renders a list of all Pages. """
-    model = Page
+  """ Renders a list of all Pages. """
+  model = Page
 
-    def get(self, request):
-        """ GET a list of Pages. """
-        pages = self.get_queryset().all()
-        return render(request, 'list.html', {
-            'pages': pages,
-        })
+  def get(self, request):
+      """ GET a list of Pages. """
+      pages = self.get_queryset().all()
+      return render(request, 'list.html', {
+          'pages': pages,
+      })
 
 
 class PageDetailView(DetailView):
@@ -47,6 +47,10 @@ class PageDetailView(DetailView):
         form = PageForm(req.POST)
 
         page = self.get_queryset().get(slug__iexact=slug)
+
+        if req.POST.get('delete'):
+            obj.delete()
+            return redirect('/')
 
         '''['title', 'author', 'content'] '''
         page.title = req.POST['title']
