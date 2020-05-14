@@ -1,8 +1,16 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 
 from wiki.models import Page
+from .forms import PageForm
+
+
+class PageCreateView(CreateView):
+    model = Page
+    fields = ['title', 'content', 'author']
+    template_name = 'new-page.html'
 
 
 class PageListView(ListView):
