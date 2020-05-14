@@ -35,4 +35,47 @@ def test_create_page(self):
     self.assertEqual(page_object.title, 'asdasdasdasd')
     self.assertEqual(page_object.content, 'asdasdasdasdasdasd')
 
+def test_edit_page(self):
+        test_user = User.objects.create()
+
+
+        page = Page.objects.create(
+            title='asdasdasdasd', 
+            content='asdasdasdasdasdasd', 
+            author=test_user.id
+            )
+
+        page.save() 
+
+        post_data = {
+            'title': 'zxczxczxczxczxczxczxc',
+            'content': 'zxczxczxczxczxczxczxczxc',
+            'author': test_user.id
+        }
+
+        res = self.client.post('/{}/'.format(slugify(page.title)), post_data)
+        self.assertEqual(res.status_code, 302)
+
+def test_edit_page_no_author(self):
+    test_user = User.objects.create()
+
+
+    page = Page.objects.create(
+        title='asdasdasdasd', 
+        content='asdasdasdasdasdasd', 
+        author='ssdfsdfsdfsd',
+    )
+
+    page.save() 
+
+    post_data = {
+        'title': 'zxczxczxczxczxczxczxc',
+        'content': 'zxczxczxczxczxczxczxczxc',
+        'author': test_user.id
+    }
+
+    res = self.client.post('/{}/'.format(slugify(page.title)), post_data)
+    self.assertEqual(res.status_code != 302)
+
+    
 
